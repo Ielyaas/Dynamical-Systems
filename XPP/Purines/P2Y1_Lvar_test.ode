@@ -1,0 +1,157 @@
+# Bifurcation analysis of the full PKC model
+
+#  Initial conditions for the steady state, R=0, L=0, D = 0, Q = 0, p=0
+
+init R=1
+init c=0.0805296
+init ct=3.861011
+init h=0.70395
+init p=0
+init L=0
+
+## Parameter values
+
+param Vplc=0
+param Vpkc=0.1
+param delta=0
+param Kplc=0.11
+param Vpm=0.07
+
+param sw = 1
+
+# P2Y1
+
+param A=0.5
+
+param K1=0.05
+param K3=20
+param k2=0.5
+param k_2=0.05
+param k4=0.05
+param k_4=0.5
+
+
+param gamma=5.5
+
+param Kc=0.2
+param Kp=0.3
+param Kf=40
+param Kb=0.4
+param Kh=0.1
+#param tau_max=2000
+param tau_max=200
+#param Ktau=0.2
+param Ktau=0.1
+
+param Kpkc=0.3
+
+param Vs=0.9
+param Kbar=1.5e-5
+param Ks=0.2
+param alpha0=0.003
+param alpha1=0.01
+param Kce=14
+
+param Kpm=0.3
+
+param L_t=0.8
+param kL=0.5
+param k_L=0.008
+param k_r=0.167
+param Q_t1=0.887
+param Q_t2=1.087
+param kmin=0.1
+param k_i=2
+
+# Parameters for R1
+#param sigma1=1
+#param omega1=1
+
+# Parameters for R2
+param sigma1=0.1
+param omega1=0.8
+
+param tau_c=2
+param in=1
+
+param V5p=0.0001
+param V3k=0.05
+# param V3k=0
+param K3k=0.4
+
+#param lambda1=147
+param lambda1=0
+#param lambda2=0.36
+param lambda2=0
+param lambda3=0.5
+ 
+## Functions of the model
+
+alpha0_til=delta*alpha0
+alpha1_til=delta*alpha1
+
+rho_d=k4/(1+K3)+k_2/(1+(1/K3))
+rho_p=k_4*K1/(K1+A)+k2*A/(K1+A)
+
+
+ce=gamma*(ct-c)
+
+D=kL*L/k_L
+
+Jin = alpha0_til+alpha1_til*(Kce^4/(Kce^4+ce^4))
+kplus1=in*(Vpkc*D*alpha1_til*Kce^4/(Kce^4+ce^4))
+kplus2=Vpkc*D*c^2/(c^2+Kpkc^2)
+Q1=kplus1*Q_t1/(kplus1+kmin)
+Q2=kplus2*Q_t2/(kplus2+kmin)
+
+Q_tilde = sigma1*Q1+omega1*Q2
+
+kr=R*A/(K1+A)*(Vplc-lambda3*Q1)*(c^2/(c^2+Kplc^2))
+
+Kc_tilde=Kc*(1-sw*Q2)
+Ktau_til=Ktau*(1-lambda1*Q1)
+tau_mx_til=tau_max*(1-lambda2*delta)
+
+phi_c=c^4/(c^4+Kc_tilde^4)
+phi_p=p^2/(Kp^2+p^2)
+phi_p_down=Kp^2/(Kp^2+p^2)
+h_inf=Kh^4/(Kh^4+c^4)
+tau = tau_mx_til*Ktau_til^4/(Ktau_til^4+c^4)
+
+beta = phi_p*phi_c*h
+alpha = phi_p_down*(1-phi_c*h_inf)
+
+Po=beta/(beta + Kb*(beta+alpha))
+
+eta=V3K/(V3K + V5P)
+# nu_deg = (Q1 + 1)*(eta*K3K^2/(c^2 + K3K^2) - (1 - eta))
+nu_deg = (Q1 + 1)*(eta*c^2/(c^2 + K3K^2) - (1 - eta))
+tau_p = 1/((V3K + V5P)*(1 + Q1))
+
+Jipr=Kf*Po*(ce-c)
+Jpm = delta*Vpm*c^2/(Kpm^2+c^2)
+Jserca=Vs*(c^2-Kbar*ce^2)/(c^2+Ks^2)
+
+## Functions of interest
+
+aux IPR = Jipr
+aux PKC1 = Q1
+aux PKC2 = Q2
+
+## Differential Equations
+
+dc/dt=(Jipr-Jserca+Jin-Jpm)/tau_c
+dct/dt=Jin-Jpm
+dh/dt=(h_inf-h)/tau
+dp/dt=(kL*L-nu_deg*p)/tau_p
+dR/dt=(1-R)*rho_d-R*Q_tilde*rho_p
+dL/dt=kr*(L_t-L) - k_r*L
+
+# Continuation parameters
+
+@ total=400,dt=0.05,xp=t,yp=c,xlo=0,xhi=400,ylo=0,yhi=0.6,meth=gear,bounds=1000
+@ ntst=300,dsmin=0.0001,ds=0.001,dsmax=0.01,parmax=10
+@ nmax=50000, npr=5000
+@ autoxmin=0,autoxmax=10,autoymin=0,autoymax=2
+
+done

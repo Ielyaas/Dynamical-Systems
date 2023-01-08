@@ -1,0 +1,129 @@
+# Bifurcation analysis of the full PKC model
+
+#  Initial conditions for the steady state, R=0, L=0, D = 0, Q = 0, p=0
+
+init R1=1
+init R2=1
+init c=0.0805296
+init h=0.70395
+init p=0
+
+## Parameter values
+
+param Vplc=0
+param Kplc=0.2
+param ct = 3
+
+param Vpkc=0.1
+param sw = 1
+
+# P2Y1
+
+param A1=0
+
+param K1=0.05
+param K3=20
+param k12=0.5
+param k_12=0.05
+param k14=0.05
+param k_14=0.5
+
+# P2Y2/4
+
+param A2=0.5
+
+param K2=0.05
+param K4=20;
+param k22=0.05
+param k_22=0.05
+param k24=0.05
+param k_24=0.05
+
+param gamma=5.5
+param delta=2.5
+
+param Kc=0.2
+param Kp=0.3
+param Kf=40
+param Kb=0.4
+param Kh=0.1
+param tau_max=200
+param Ktau=0.09
+
+param Kpkc=0.3
+
+param Vs=0.9
+param Kbar=1.5e-5
+param Ks=0.2
+
+
+param Kpm=0.3
+
+param L_t=0.8
+param kL=0.5
+param k_L=0.008
+param k_r=0.167
+param Q_t=1.087
+param kmin=0.1
+param k_i=2
+
+param tau_c=2
+
+param omega1=0.9
+param omega2=0.7
+
+## Functions of the model
+
+rho1_d=k14/(1+K3)+k_12/(1+(1/K3))
+rho1_p=k_14*K1/(K1+A1)+k12*A1/(K1+A1)
+
+rho2_d=k24/(1+K4)+k_22/(1+(1/K4))
+rho2_p=k_24*K2/(K2+A2)+k22*A2/(K2+A2)
+
+ce=gamma*(ct-c)
+
+kr=(R1*A1/(K1+A1)+R2*A2/(K2+A2))*(Vplc*c^2/(c^2+Kplc^2))
+
+L=kr*L_t/(kr+k_r)
+D=kL*L/k_L
+
+kplus=Vpkc*D*c^2/(c^2+Kpkc^2)
+Q=kplus*Q_t/(kplus+kmin)
+
+Kp_tilde=Kp*(1-sw*Q)
+
+phi_c=c^4/(c^4+Kc^4)
+phi_p=p^2/(Kp_tilde^2+p^2)
+phi_p_down=Kp_tilde^2/(Kp_tilde^2+p^2)
+h_inf=Kh^4/(Kh^4+c^4)
+tau = tau_max*Ktau^4/(Ktau^4+c^4)
+
+beta = phi_p*phi_c*h
+alpha = phi_p_down*(1-phi_c*h_inf)
+
+Po=beta/(beta + Kb*(beta+alpha))
+
+Jipr=Kf*Po*(ce-c)
+Jserca=Vs*(c^2-Kbar*ce^2)/(c^2+Ks^2)
+
+## Functions of interest
+
+aux IPR = Jipr
+aux PKC = Q
+
+## Differential Equations
+
+dc/dt=(Jipr-Jserca)/tau_c
+dh/dt=(h_inf-h)/tau
+dp/dt=kL*L-k_i*p
+dR1/dt=(1-R1)*rho1_d-R1*omega1*Q*rho1_p
+dR2/dt=(1-R2)*rho2_d-R2*omega2*Q*rho2_p
+
+# Continuation parameters
+
+@ total=400,dt=0.05,xp=t,yp=c,xlo=0,xhi=400,ylo=0,yhi=0.6,meth=gear,bounds=1000
+@ ntst=500,dsmin=0.00001,ds=0.001,dsmax=0.01,parmax=10
+@ nmax=100000, npr=10000
+@ autoxmin=0,autoxmax=10,autoymin=0,autoymax=2
+
+done
