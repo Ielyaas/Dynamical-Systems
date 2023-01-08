@@ -1,0 +1,46 @@
+# Bifurcation analysis of Cuthbertson model 1991
+#
+G(0)=0
+D(0)=0
+C(0)=0.01
+
+# Parameter values
+
+param rg = 0
+param hg = 5
+param kd = 500
+param hd = 4
+param ld = 0.3
+param kc = 700
+param hc = 0.4
+param lc = 80
+param Kp = 40
+param K_c = 100
+param Kg = 50
+param K_d = 5
+param Ks = 5
+param PH = 0 
+
+
+# Functions
+
+R_PKC = (D + PH)/(Kp + D + PH)*C/(K_c + C)
+g_star = G/Kg
+d_star = D/K_d
+R_PLC = (d_star^2/(1 + d_star^2))*(g_star^4/(1 + g_star^4))
+s_star = D/Ks
+
+# Define the differential equations here
+#
+dC/dt = kc*s_star^3/(1 + s_star^3) - hc*C + lc
+dG/dt = rg - hg*R_PKC*G
+dD/dt = kd*R_PLC - hd*D + ld
+
+
+#
+@ total=400,dt=0.05,xp=t,yp=c,xlo=0,xhi=400,ylo=0,yhi=2,meth=gear,bounds=1000
+@ ntst=500,dsmin=0.0001,ds=0.001,dsmax=0.01,parmax=20
+@ nmax=200000, npr=20000
+@ autoxmin=0,autoxmax=20,autoymin=0,autoymax=1200
+
+done

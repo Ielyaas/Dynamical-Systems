@@ -1,0 +1,42 @@
+# Bifurcation analysis of Kummer model 2000
+#
+a(0)=0
+b(0)=0
+c(0)=0.01
+d(0)=20
+
+# Parameter values
+
+param k2=0
+param k1=0
+param k3=0.64
+param k4=0.19
+param k5=4.88
+param k6=1.18
+param k7=2.08
+param k8=32.24
+param k9=29.09
+param k10=5
+param k11=2.67
+param k12=0.7
+param k13=13.58
+param k14=153
+param k15=0.16
+param k16=4.85
+param k17=0.05
+
+
+# Define the differential equations here
+#
+da/dt = k1 + k2*a - k3*a*b/(a+k4) - k5*a*c/(a+k6)
+db/dt = k7*a - k8*b/(b+k9)
+dc/dt = k10*c*b*d/(d+k11) + k12*b + k13*a - k14*c/(c+k15) - k16*c/(c+k17)
+dd/dt = -k10*c*b*d/(d+k11) + k16*c/(c+k17)
+
+#
+@ total=400,dt=0.05,xp=t,yp=c,xlo=0,xhi=400,ylo=0,yhi=2,meth=gear,bounds=1000
+@ ntst=100,dsmin=0.00001,ds=0.005,dsmax=0.01,parmax=5
+@ nmax=50000, npr=10000
+@ autoxmin=0,autoxmax=5,autoymin=0,autoymax=10
+
+done
