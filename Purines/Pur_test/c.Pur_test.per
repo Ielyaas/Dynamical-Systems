@@ -1,0 +1,66 @@
+# Parameter file for auto
+# Dimension of the system
+NDIM = 6
+# Type of problem (Here following point)
+IPS = 2
+# Where to restart computation (Here new pb)
+IRS = 0
+# Detection of fold
+ILP = 1
+# Continuation parameter
+ICP = [1,11,2,3,4,5,31,32,33,34,35,36,41,42,43,44,45,46,80]
+# Mesh interval
+NTST = 300
+# Collocation point
+NCOL = 4
+# Mesh adaptation
+IAD = 3
+# Bifurcation detection
+ISP = 2
+# Branch switching
+ISW = -1
+# Selection of principal measure (0 is L2)
+IPLT = 0
+# Number of boundary conditions
+NBC = 0
+# Number of integral conditions
+NINT = 0
+# Maximum number of steps
+NMX = 100000
+# Parameter interval
+#RL0 = 0
+#RL1 = 2
+# Number of steps before saving
+NPR = 2000
+# Maximum number of bifurcations to be treated
+MXBF = 1
+# Control diagnosis output
+IID = 4
+# Maximum number of iteration to find special solutions
+ITMX = 4
+# Maximum number of correction steps
+ITNW = 5
+# Number of Full Newton correction steps
+NWTN = 6
+# User defined derivatives
+JAC = 0
+# Precision parameters
+EPSL = 1e-08, EPSU = 1e-08, EPSS = 1e-06
+# Start step size (sign matter)
+DS = 1e-04
+# Min step size
+DSMIN = 1e-10
+# Max Step size
+DSMAX = 1e-02
+# Number of adaptation between step size
+IADS = 1
+# Max number of parameters
+NPAR = 80
+# Output Control
+unames = {1:'R1',2:'R2',3:'c',4:'ct',5:'h',6:'p'}
+parnames = {1:'V_plc',2:'V_pkc',3:'sw',4:'Kplc',5:'in'}
+# Special weights
+THL = {11:0.0}, THU = {}
+# Special values of output
+UZR = {}
+UZSTOP = {} 
