@@ -1,0 +1,91 @@
+# Bifurcation analysis of the full PKC model
+
+#  Initial conditions for the steady state, R=0, L=0, D = 0, Q = 0, p=0
+
+init c=0.0805296
+init ct=3.861011
+init h=0.70395
+init p=0
+
+# Parameter values
+
+param Vplc=0
+param Vpkc=0
+
+param gamma=5.5
+param delta=2.5
+
+param k1=0.5
+param k_1=0.3
+param k2=0.9
+param k_2=0.3
+
+param Kc=0.2
+param Kp=0.3
+param Kf=40
+param Kb=0.4
+param Kh=0.1
+param tau_max=200
+param Ktau=0.09
+
+param Kplc=0.11
+param Kpkc=0.3
+
+param Vs=0.9
+param Kbar=1.5e-5
+param Ks=0.2
+param alpha0=0.003
+param alpha1=0.01
+param Kce=14
+param Vpm=0.07
+param Kpm=0.3
+
+param L_t=0.8
+param k_L=0.008
+param k_r=0.167
+param Q_t=1.087
+param kmin=0.1
+param k_i=2
+
+param tau_c=2
+
+# Functions of the model
+
+ce=gamma*(ct-c)
+
+L=Vplc*c^2/(c^2+Kplc^2)
+
+Q=Vpkc*c^2/(c^2+Kpkc^2)
+rho_p=(k2*Q)^2/((k2*Q)^2+k_2^2)
+
+phi_c=c^4/(c^4+Kc^4)
+phi_p=p^2/(Kp^2+p^2)
+phi_p_down=Kp^2/(Kp^2+p^2)
+h_inf=Kh^4/(Kh^4+c^4)
+tau = tau_max*Ktau^4/(Ktau^4+c^4)
+
+beta = phi_p*phi_c*h*(1+rho_p)
+alpha = phi_p_down*(1-phi_c*h_inf)
+
+Po=beta/(beta + Kb*(beta+alpha))
+
+R=k1^2/(k1^2+(k_1*Q)^2)
+
+Jipr=Kf*Po*(ce-c)
+Jpm = Vpm*c^2/(Kpm^2+c^2)
+Jin = alpha0+alpha1*(Kce^4/(Kce^4+ce^4))
+Jserca=Vs*(c^2-Kbar*ce^2)/(c^2+Ks^2)
+
+# Differential Equations
+
+dc/dt=(Jipr-Jserca+delta*(Jin-Jpm))/tau_c
+dct/dt=delta*(Jin-Jpm)
+dh/dt=(h_inf-h)/tau
+dp/dt=R*L-k_i*p
+
+@ total=400,dt=0.05,xp=t,yp=c,xlo=0,xhi=400,ylo=0,yhi=0.6,meth=gear,bounds=1000
+@ ntst=300,dsmin=0.000001,ds=0.0001,dsmax=0.01,parmax=2
+@ nmax=50000, npr=5000
+@ autoxmin=0,autoxmax=2,autoymin=0,autoymax=2
+
+done

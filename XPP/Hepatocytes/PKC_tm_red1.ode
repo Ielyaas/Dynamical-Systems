@@ -1,0 +1,49 @@
+# Bifurcation analysis of receptor/PKC model
+
+# Initial conditions are the steady state for pkc=0
+#
+R(0)=1
+L(0)=0
+Q(0)=0
+
+# Parameter values
+
+param Vpkc=100000
+
+param Vplc=0.5
+
+param A=0.5
+param K1=0.05
+param K3=5
+param k2=0.005
+param k_2=0.05
+param k4=0.05
+param k_4=10
+
+param k_L=0.167
+param L_t=0.8
+param ki=0.5
+param k_G=0.008
+param Q_t=1.087
+param kmin=0.1
+
+# Define the functions used in the model
+
+rho_d=k4/(1+K3)+k_2/(1+(1/K3))
+rho_p=k_4*K1/(K1+A)+k2*A/(K1+A)
+
+D = ki*L/k_G
+
+# Define the differential equations here
+#
+dR/dt=(1-R)*rho_d-R*Q*rho_p
+dL/dt=Vplc*R*(L_t-L)-k_L*L
+dQ/dt=Vpkc*D*(Q_t-Q)-kmin*Q
+
+#
+@ total=400,dt=0.05,xp=t,yp=R,xlo=0,xhi=400,ylo=0,yhi=2,meth=gear,bounds=1000
+@ ntst=1000000,dsmin=0.001,ds=0.05,dsmax=0.1,parmin=100000,parmax=1000000
+@ nmax=7000000, npr=100000
+@ autoxmin=100000,autoxmax=1000000,autoymin=0,autoymax=1.2
+
+done

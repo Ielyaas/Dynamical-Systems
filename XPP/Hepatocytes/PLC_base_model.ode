@@ -1,0 +1,90 @@
+# Bifurcation analysis of total Ca2+ hepatocyte model with SOCC
+
+# Initial conditions are the steady state for p=0
+#
+c(0)=0.0863
+ct(0)=4.137186
+h(0)=0.424888
+p(0)=0
+
+# Parameter values
+
+param Vplc=0
+param Kplc=0.1
+param tau_max=100
+param delta=2.5
+param Ktau=0.09
+param Kc=0.2
+param Kh=0.08
+
+param Vs=0.9
+param Ks=0.2
+param Kbar=0.00001957
+param Kp=0.2
+
+param gamma=5.5
+param Vpm=0.11
+param Kpm=0.3
+param alpha0=0.0027
+param alpha1=0.015
+param Kce=14
+
+param Kf=10
+param Kb=0.4
+
+param bt=50
+param K_b=2
+
+#param tau_c=2
+
+# New parameters
+
+param lambda=0.1
+param k_i=1
+
+# Define the functions used in the model
+
+ce=gamma*(ct-c)
+
+phi_c=c^4/(c^4+Kc^4)
+phi_p=p^2/(Kp^2+p^2)
+phi_p_down=Kp^2/(Kp^2+p^2)
+h_inf=Kh^4/(Kh^4+c^4)
+tau = tau_max*Ktau^4/(Ktau^4+c^4)
+#tau = tau_max*h_inf
+#tau_c=c*bt/K_b+c
+
+beta = phi_p*phi_c*h
+alpha = phi_p_down*(1-phi_c*h_inf)
+
+Po=beta/(beta + Kb*(beta+alpha))
+Jipr=Kf*Po*(ce-c)
+
+Jpm = Vpm*c^2/(Kpm^2+c^2)
+Jin = alpha0+alpha1*(Kce^4/(Kce^4+ce^4))
+Jserca=Vs*(c^2-Kbar*ce^2)/(c^2+Ks^2)
+L = Vplc*c^2/(Kplc^2+c^2)
+
+
+# Membrane Fluxes
+
+aux IPR=Jipr
+aux SERCA=Jserca
+aux PM=Jpm
+aux IN=Jin
+aux FLUX=delta*(Jin-Jpm)
+
+# Define the differential equations here
+#
+dc/dt  = Jipr - Jserca + delta*(Jin - Jpm) + lambda*(K_b - c*bt)
+dct/dt = delta*(Jin - Jpm)
+dh/dt  = (h_inf - h)/tau
+dp/dt  = L - k_i*p
+
+#
+@ total=400,dt=0.05,xp=t,yp=c,xlo=0,xhi=400,ylo=0,yhi=2,meth=gear,bounds=1000
+@ ntst=100,dsmin=0.00001,ds=0.005,dsmax=0.01,parmax=1
+@ nmax=70000, npr=7000
+@ autoxmin=0,autoxmax=1,autoymin=0,autoymax=1.2
+
+done
